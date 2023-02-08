@@ -28,7 +28,7 @@ public class JwtService {
   /**
    * JWT 토큰을 만드는 메소드
    *
-   * @param subject String member_id 토큰을 만들때 사용한다.
+   * @param memberAppId String member_id 토큰을 만들때 사용한다.
    * @param expTime long 30분: 30*1000*60
    * @return 토큰을 반환한다.
    */
@@ -93,5 +93,23 @@ public class JwtService {
       //todo: logger 적어주기
       return false;
     }
+  }
+
+  /**
+   * 토큰의 Claim 디코딩
+   */
+  private Claims getAllClaims(String token) {
+    return Jwts.parser()
+        .setSigningKey(DatatypeConverter.parseBase64Binary(SECRET_KEY))
+        .parseClaimsJws(token)
+        .getBody();
+  }
+
+  /**
+   * Claim 에서 username 가져오기
+   */
+  public Long getMemberIdFromToken(String token) {
+    Long memberId = Long.parseLong(String.valueOf(getAllClaims(token).get("memberId")));
+    return memberId;
   }
 }

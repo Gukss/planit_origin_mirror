@@ -6,6 +6,8 @@ import com.project.planit.chatting.dto.FindChattingMessageResponse;
 import com.project.planit.chatting.entity.ChattingMessage;
 import com.project.planit.chatting.service.ChattingServiceImpl;
 
+import com.project.planit.common.jwt.JwtService;
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -32,6 +34,7 @@ public class ChattingController {
     @PostMapping
     public ResponseEntity<?> createChattingMessage(@RequestBody CreateChattingRequest request){
         //todo: memberId 토큰값으로 바꿔주기
+
         Long memberId = 1L;
         chattingService.createChattingMessage(request,memberId);
         return ResponseEntity.ok("ok");

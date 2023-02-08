@@ -1,10 +1,12 @@
 package com.project.planit.member.controller;
 
+import com.project.planit.common.jwt.JwtService;
 import com.project.planit.member.dto.CreateMemberRequest;
 import com.project.planit.member.dto.ReadMemberResponse;
 import com.project.planit.member.dto.UpdateMemberRequest;
 import com.project.planit.member.entity.Member;
 import com.project.planit.member.service.MemberServiceImpl;
+import io.jsonwebtoken.Claims;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,7 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/members")
 public class MemberController {
   private final MemberServiceImpl memberService;
-
+  private final JwtService jwtService;
   // 회원가입
   // TODO: 회원가입 부분은 토큰을 반환할것이여서 다시 만져야함
   @PostMapping()
@@ -42,8 +45,9 @@ public class MemberController {
 
   // 회원 정보 수정
   @PatchMapping()
-  public ResponseEntity<String> updateMember(@RequestBody UpdateMemberRequest request){
-    Long id=1L; // @TODO : 헤더 토큰에 있는 멤버 id값으로 넣어줘야함
+  public ResponseEntity<String> updateMember(@RequestBody UpdateMemberRequest request, @RequestHeader(value = "token") String jwt
+  ){
+    Long id = jwtService.getMemberIdFromToken(jwt);
 
     memberService.updateMember(id,request);
 
