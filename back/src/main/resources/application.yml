@@ -3,8 +3,8 @@ server:
   error:
     whitelabel:
       enabled: false
-    servlet:
-      context-path: /api
+  servlet:
+    context-path: /api
 
 spring:
   # TODO : PUSH 하기 전에 다시 한번 확인할 것.
