@@ -60,9 +60,9 @@ public class MemberServiceImpl implements MemberService {
         .orElseThrow(() -> new NotFoundMemberException(NotFoundExceptionMessage.USER_NOT_FOUND));
 
     ReadMemberResponse response=ReadMemberResponse.builder()
-        .appId(member.getAppId())
-        .name(member.getName())
-        .email(member.getEmail())
+        .memberAppId(member.getAppId())
+        .memberName(member.getName())
+        .memberEmail(member.getEmail())
         .build();
 
     return response;
@@ -77,9 +77,9 @@ public class MemberServiceImpl implements MemberService {
 
     for(Member member:memberList){
       ReadMemberResponse readMemberResponse=ReadMemberResponse.builder()
-          .appId(member.getAppId())
-          .name(member.getName())
-          .email(member.getEmail())
+          .memberAppId(member.getAppId())
+          .memberName(member.getName())
+          .memberEmail(member.getEmail())
           .build();
 
       response.add(readMemberResponse);
