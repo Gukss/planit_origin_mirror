@@ -1,9 +1,12 @@
 package com.project.planit.member.service;
 
+import com.project.planit.common.auth.jwt.JwtProvider;
+import com.project.planit.common.auth.userDetails.PrincipalDetails;
 import com.project.planit.common.exception.NotFoundExceptionMessage;
 import com.project.planit.common.exception.NotFoundMemberException;
 import com.project.planit.member.dto.CreateMemberRequest;
 import com.project.planit.member.dto.ReadMemberResponse;
+import com.project.planit.member.dto.SignInMemberResponse;
 import com.project.planit.member.dto.UpdateMemberRequest;
 
 import com.project.planit.member.entity.Member;
@@ -11,6 +14,10 @@ import com.project.planit.member.repository.MemberRepository;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +33,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class MemberServiceImpl implements MemberService {
   private final MemberRepository memberRepository;
+  private final JwtProvider jwtProvider;
+  private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
   @Transactional
   @Override
@@ -107,4 +116,37 @@ public class MemberServiceImpl implements MemberService {
     return member;
   }
 
+  // username 과 패스워드로 사용자를 인증하여 액세스토큰을 반환한다.
+  public SignInMemberResponse createAccessToken(String memberAppId, String memberAppPwd) {
+    // 받아온 유저네임과 패스워드를 이용해 UsernamePasswordAuthenticationToken 객체 생성
+    UsernamePasswordAuthenticationToken authenticationToken =
+        new UsernamePasswordAuthenticationToken(memberAppId, memberAppPwd);
+
+    // authenticationToken 객체를 통해 Authentication 객체 생성
+    // 이 과정에서 CustomUserDetailsService 에서 우리가 재정의한 loadUserByUsername 메서드 호출
+    Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+    // 그 객체를 시큐리티 컨텍스트에 저장
+    SecurityContextHolder.getContext().setAuthentication(authentication);
+    PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+    Member member = principal.getMember();
+    // 인증 정보를 기준으로 jwt access 토큰 생성
+    String accessToken = jwtProvider.createAccessToken(authentication, member.getId(), member.getName());
+
+    return SignInMemberResponse.builder()
+        .accessToken(accessToken)
+        .build();
+  }
+
+  public SignInMemberResponse createRefreshToken(String memberAppId, String memberAppPwd) {
+    UsernamePasswordAuthenticationToken authenticationToken =
+        new UsernamePasswordAuthenticationToken(memberAppId, memberAppPwd);
+    Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+    String refreshToken = jwtProvider.createRefreshToken(authentication);
+
+
+
+    return SignInMemberResponse.builder()
+        .accessToken(refreshToken)
+        .build();
+  }
 }

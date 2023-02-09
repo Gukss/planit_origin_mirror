@@ -6,8 +6,6 @@ import com.project.planit.chatting.dto.FindChattingMessageResponse;
 import com.project.planit.chatting.entity.ChattingMessage;
 import com.project.planit.chatting.service.ChattingServiceImpl;
 
-import com.project.planit.common.jwt.JwtService;
-import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;

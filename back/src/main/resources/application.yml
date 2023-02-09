@@ -44,3 +44,6 @@ logging:
       springframework:
         boot:
           autoconfigure: info
+jwt:
+  header: Authorization
+  secret: PlanitplanitPlanitplanitPlanitplanitPlaintplanitPlanitplanitPlaint
