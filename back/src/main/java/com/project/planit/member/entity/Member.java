@@ -95,4 +95,8 @@ public class Member extends BaseEntity{
   public void updateRefreshToken(String refreshToken) {
     this.refreshToken = refreshToken;
   }
+
+  public void updatePwd(String newPwd){
+    this.appPwd = newPwd;
+  }
 }

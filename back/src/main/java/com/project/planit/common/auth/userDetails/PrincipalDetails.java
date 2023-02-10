@@ -21,7 +21,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Data
 @AllArgsConstructor
 @Builder
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 public class PrincipalDetails implements UserDetails {
   private final Member member;
 

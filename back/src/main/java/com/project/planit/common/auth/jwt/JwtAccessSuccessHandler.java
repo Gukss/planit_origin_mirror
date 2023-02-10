@@ -29,6 +29,7 @@ import java.util.Optional;
 public class JwtAccessSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
   private final MemberRepository memberRepository;
   private final JwtProvider jwtProvider;
+  private final JwtRefreshProvider jwtRefreshProvider;
 
   @Override
   public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -36,11 +37,11 @@ public class JwtAccessSuccessHandler extends SimpleUrlAuthenticationSuccessHandl
     Member member = principalDetails.getMember();
 
     String accessToken = jwtProvider.createAccessToken(authentication, member.getId(), member.getName());
-    String refreshToken = jwtProvider.createRefreshToken(authentication);
+    String refreshToken = jwtRefreshProvider.createRefreshToken(authentication);
 
     save(refreshToken, principalDetails);
 
-    ResponseCookie cookie = ResponseCookie.from("refresh", refreshToken)
+    ResponseCookie cookie = ResponseCookie.from("access", accessToken)
         .httpOnly(true)
         .maxAge(JwtProvider.REFRESH_TOKEN_VALIDATE_TIME)
         .path("/")

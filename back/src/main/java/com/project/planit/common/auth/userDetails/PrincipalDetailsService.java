@@ -30,6 +30,7 @@ public class PrincipalDetailsService implements UserDetailsService {
   public PrincipalDetails loadUserByUsername(String username) throws UsernameNotFoundException {
     Member member = memberRepository.findByAppId(username)
         .orElseThrow(()->new NotFoundMemberException(NotFoundExceptionMessage.USER_NOT_FOUND));
+    member.updatePwd("{noop}"+member.getAppPwd()); //There is no PasswordEncoder mapped for the id "null"때문에 형식을 지정해줌
     return new PrincipalDetails(member);
   }
 

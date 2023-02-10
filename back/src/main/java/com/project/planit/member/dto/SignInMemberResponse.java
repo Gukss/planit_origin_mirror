@@ -17,5 +17,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class SignInMemberResponse {
-  private String Token;
+  private String token;
+  private Long memberId;
+  private String memberAppId;
+  private String memberName;
 }

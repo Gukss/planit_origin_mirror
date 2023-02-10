@@ -33,8 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class MemberServiceImpl implements MemberService {
   private final MemberRepository memberRepository;
-  private final JwtProvider jwtProvider;
-  private final AuthenticationManagerBuilder authenticationManagerBuilder;
+
 
   @Transactional
   @Override
@@ -114,39 +113,5 @@ public class MemberServiceImpl implements MemberService {
   public Member findMemberByMemberAppId(String memberAppId){
     Member member = memberRepository.findByAppId(memberAppId).orElseThrow(()->new NotFoundMemberException(NotFoundExceptionMessage.USER_NOT_FOUND));
     return member;
-  }
-
-  // username 과 패스워드로 사용자를 인증하여 액세스토큰을 반환한다.
-  public SignInMemberResponse createAccessToken(String memberAppId, String memberAppPwd) {
-    // 받아온 유저네임과 패스워드를 이용해 UsernamePasswordAuthenticationToken 객체 생성
-    UsernamePasswordAuthenticationToken authenticationToken =
-        new UsernamePasswordAuthenticationToken(memberAppId, memberAppPwd);
-
-    // authenticationToken 객체를 통해 Authentication 객체 생성
-    // 이 과정에서 CustomUserDetailsService 에서 우리가 재정의한 loadUserByUsername 메서드 호출
-    Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-    // 그 객체를 시큐리티 컨텍스트에 저장
-    SecurityContextHolder.getContext().setAuthentication(authentication);
-    PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-    Member member = principal.getMember();
-    // 인증 정보를 기준으로 jwt access 토큰 생성
-    String accessToken = jwtProvider.createAccessToken(authentication, member.getId(), member.getName());
-
-    return SignInMemberResponse.builder()
-        .accessToken(accessToken)
-        .build();
-  }
-
-  public SignInMemberResponse createRefreshToken(String memberAppId, String memberAppPwd) {
-    UsernamePasswordAuthenticationToken authenticationToken =
-        new UsernamePasswordAuthenticationToken(memberAppId, memberAppPwd);
-    Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-    String refreshToken = jwtProvider.createRefreshToken(authentication);
-
-
-
-    return SignInMemberResponse.builder()
-        .accessToken(refreshToken)
-        .build();
   }
 }

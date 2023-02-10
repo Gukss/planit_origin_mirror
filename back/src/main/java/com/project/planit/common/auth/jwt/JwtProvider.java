@@ -35,12 +35,16 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtProvider {
   private final String SECRET_KEY;
+//  @Value("${jwt.access-token-validity-in-seconds}")
 
-  private static final Long ACCESS_TOKEN_VALIDATE_TIME = 1000L * 30 * 60; //30분
-  public static final Long REFRESH_TOKEN_VALIDATE_TIME = 1000L * 60 * 60 * 24 * 7; //일주일
+  private final Long ACCESS_TOKEN_VALIDATE_TIME; // = 1000L * 30 * 60; //30분
+  public static Long REFRESH_TOKEN_VALIDATE_TIME; // = 1000L * 60 * 60 * 24 * 7; //일주일
   private final String AUTHORITIES_KEY = "role";
 
-  public JwtProvider(@Value("${jwt.secret-key}") String secretKey) {
+  public JwtProvider(@Value("${jwt.secret}") String secretKey, @Value("${jwt.access-token-validity-in-seconds}") Long accessTokenValidateTime,
+      @Value("${jwt.refresh-token-validity-in-seconds}") Long refreshTokenValidateTime) {
+    this.ACCESS_TOKEN_VALIDATE_TIME = accessTokenValidateTime;
+    this.REFRESH_TOKEN_VALIDATE_TIME = refreshTokenValidateTime;
     this.SECRET_KEY = Base64.getEncoder().encodeToString(secretKey.getBytes());
   }
 
@@ -79,16 +83,16 @@ public class JwtProvider {
         .compact();
   }
 
-  public String createRefreshToken(Authentication authentication){
-    Date now = new Date();
-    Date validity = new Date(now.getTime() + REFRESH_TOKEN_VALIDATE_TIME);
-
-    return Jwts.builder()
-        .signWith(SignatureAlgorithm.HS512, SECRET_KEY)
-        .setIssuedAt(now)
-        .setExpiration(validity)
-        .compact();
-  }
+//  public String createRefreshToken(Authentication authentication){
+//    Date now = new Date();
+//    Date validity = new Date(now.getTime() + REFRESH_TOKEN_VALIDATE_TIME);
+//
+//    return Jwts.builder()
+//        .signWith(SignatureAlgorithm.HS512, SECRET_KEY)
+//        .setIssuedAt(now)
+//        .setExpiration(validity)
+//        .compact();
+//  }
 
   public Authentication getAuthentication(String accessToken) {
     Claims claims = parseClaims(accessToken);
@@ -105,7 +109,7 @@ public class JwtProvider {
     return new UsernamePasswordAuthenticationToken(new PrincipalDetails((Member)claims.get("memberAppId")), authorities);
   }
 
-  private Claims parseClaims(String accessToken) {
+  public Claims parseClaims(String accessToken) {
     try {
       //토큰을 넣어서 풀어준다.
       return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(accessToken).getBody();

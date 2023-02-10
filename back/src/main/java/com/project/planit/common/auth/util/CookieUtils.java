@@ -1,6 +1,8 @@
 package com.project.planit.common.auth.util;
 
 import com.project.planit.common.auth.jwt.JwtProvider;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
@@ -28,12 +30,17 @@ public class CookieUtils {
     return Optional.empty();
   }
 
-  public static void addCookie(HttpServletResponse response, String refreshToken) {
-    ResponseCookie cookie = ResponseCookie.from("refresh", refreshToken)
-        .httpOnly(true)
-        .maxAge(JwtProvider.REFRESH_TOKEN_VALIDATE_TIME)
-        .path("/")
-        .build();
+  public static void addCookie(HttpServletResponse response, String accessToken) {
+    ResponseCookie cookie = null;
+    try {
+      cookie = ResponseCookie.from("access", URLEncoder.encode(accessToken, "UTF-8"))
+          .httpOnly(true)
+          .maxAge(JwtProvider.REFRESH_TOKEN_VALIDATE_TIME)
+          .path("/")
+          .build();
+    } catch (UnsupportedEncodingException e) {
+      throw new RuntimeException(e);
+    }
 
     response.addHeader("Set-Cookie", cookie.toString());
   }

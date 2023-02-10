@@ -1,6 +1,6 @@
 package com.project.planit.common.auth.config;
 
-import com.project.planit.common.auth.jwt.JwtAuthenticationFilter;
+import com.project.planit.common.auth.jwt.JwtFilter;
 import com.project.planit.common.auth.jwt.JwtProvider;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -14,6 +14,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  * NOTE ----------------------------------------------------------- 2023-02-09        SSAFY       최초
  * 생성
  */
+
+// SecurityConfigurerAdapter를 상속받아 TokenProvider를 주입받아 JwtFilter를 통해 시큐리티 로직에 등록하는 역할 수행
 public class JwtSecurityConfig extends
     SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpSecurity> {
   private JwtProvider jwtProvider;
@@ -24,7 +26,7 @@ public class JwtSecurityConfig extends
 
   @Override
   public void configure(HttpSecurity http) {
-    JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(jwtProvider);
-    http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+    JwtFilter jwtFilter = new JwtFilter(jwtProvider);
+    http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
   }
 }
