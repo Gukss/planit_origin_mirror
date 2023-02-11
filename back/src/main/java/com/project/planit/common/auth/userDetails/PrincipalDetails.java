@@ -24,6 +24,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 //@RequiredArgsConstructor
 public class PrincipalDetails implements UserDetails {
   private final Member member;
+//  private final String memberAppId;
+//  private final String memberAppName;
 
   //todo: 맞는지 확인 필요
   @Override

@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public interface NotificationService {
-    List<FindNotificationResponse> findNotification(String memberAppId, Long id);
-    void createNotification(List<CreateNotificationRequest> request);
-    void updateNotification(UpdateNotificationRequest request);
+    List<FindNotificationResponse> findNotification(String memberAppId, Long memberId);
+    void createNotification(List<CreateNotificationRequest> request, Long sendMemberId);
+    void updateNotification(UpdateNotificationRequest request, Long memberId);
 }

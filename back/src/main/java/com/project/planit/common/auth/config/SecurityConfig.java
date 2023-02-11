@@ -9,15 +9,23 @@ import com.project.planit.common.auth.jwt.JwtRefreshProvider;
 import com.project.planit.common.auth.userDetails.PrincipalDetailsService;
 import com.project.planit.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.security.ConditionalOnDefaultWebSecurity;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.filter.CorsFilter;
@@ -34,7 +42,10 @@ import org.springframework.web.filter.CorsFilter;
 @EnableWebSecurity // 기본적인 웹보안을 활성화하겠다
 @EnableGlobalMethodSecurity(prePostEnabled = true) // @PreAuthorize 어노테이션 사용을 위해 선언
 @RequiredArgsConstructor
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+@ConditionalOnDefaultWebSecurity
+@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
+@Configuration
+public class SecurityConfig {
 
   private final MemberRepository memberRepository;
   private final JwtProvider jwtProvider;
@@ -53,22 +64,25 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     return new BCryptPasswordEncoder();
   }
 
-  @Override
-  public void configure(WebSecurity web) { //todo: 밑에 인자들 생각해보기
-    web.ignoring()
+  @Bean
+  public WebSecurityCustomizer webSecurityCustomizer() { //todo: 밑에 인자들 생각해보기
+    return (web) -> web.ignoring()
         .antMatchers(
             "/h2/**"
             ,"/favicon.ico"
             ,"/error"
+                ,"/member"
         );
   }
 
+  @Bean
   public AuthenticationSuccessHandler authenticationSuccessHandler() {
     return new JwtAccessSuccessHandler(memberRepository, jwtProvider, jwtRefreshProvider);
   }
 
-  @Override
-  protected void configure(HttpSecurity http) throws Exception {
+  @Bean
+  @Order(SecurityProperties.BASIC_AUTH_ORDER)
+  public SecurityFilterChain configure(HttpSecurity http) throws Exception {
     http.csrf().disable()
 
             .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
@@ -95,6 +109,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .antMatchers( "/notification").authenticated()
         .antMatchers( "/votes/vote-item").authenticated()
         .antMatchers( "/votes/vote-item/user").authenticated()
+            .antMatchers(HttpMethod.POST, "/members").permitAll()
+//            .antMatchers(HttpMethod.POST, "/sign-in").permitAll()
         //서버용
 //        .antMatchers( "/api/stoarges").authenticated()
 //        .antMatchers( "/api/votes").authenticated()
@@ -109,8 +125,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .anyRequest().permitAll()
 
         .and()
-            .apply(new JwtSecurityConfig(jwtProvider));
-
+            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+        return http.build();
 //    http.authorizeHttpRequests()
 //        // POST /users는 인증이 되어야 접근 가능
 //        .antMatchers( "/api/stoarges").authenticated()

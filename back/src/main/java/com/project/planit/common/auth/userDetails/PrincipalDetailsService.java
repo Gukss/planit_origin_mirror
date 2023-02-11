@@ -4,6 +4,7 @@ import com.project.planit.common.exception.NotFoundExceptionMessage;
 import com.project.planit.common.exception.NotFoundMemberException;
 import com.project.planit.member.entity.Member;
 import com.project.planit.member.repository.MemberRepository;
+import com.project.planit.util.BaseRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -31,6 +32,7 @@ public class PrincipalDetailsService implements UserDetailsService {
     Member member = memberRepository.findByAppId(username)
         .orElseThrow(()->new NotFoundMemberException(NotFoundExceptionMessage.USER_NOT_FOUND));
     member.updatePwd("{noop}"+member.getAppPwd()); //There is no PasswordEncoder mapped for the id "null"때문에 형식을 지정해줌
+//    return new PrincipalDetails(member.getId(), member.getAppId(), member.getName(), member.getAppPwd(), member.getRole(), member.getEmail(), member.getBaseRequest(), member.getRefreshToken());
     return new PrincipalDetails(member);
   }
 

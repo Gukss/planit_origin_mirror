@@ -72,14 +72,14 @@ public class NotificationServiceImpl implements NotificationService{
 
     @Override
     @Transactional
-    public void createNotification(List<CreateNotificationRequest> request) {
+    public void createNotification(List<CreateNotificationRequest> request, Long sendMemberId) {
 
         for (CreateNotificationRequest requestItem:request){
             Member recevierMember=memberRepository.findByAppId(requestItem.getReceiverMemberId())
                     .orElseThrow(() -> new NotFoundExceptionMessage(NotFoundExceptionMessage.USER_NOT_FOUND));
 
             // 토큰에서 sendMemberId값을 받아오는데 이때 이 id로 find해서 Member객체를 가져와야함!!
-            Member snedMember=memberRepository.findById(1L)
+            Member snedMember=memberRepository.findById(sendMemberId)
                     .orElseThrow(() -> new NotFoundExceptionMessage(NotFoundExceptionMessage.USER_NOT_FOUND));
 
             Notification notification=Notification.create(false, recevierMember,snedMember);
@@ -91,10 +91,13 @@ public class NotificationServiceImpl implements NotificationService{
 
     @Override
     @Transactional
-    public void updateNotification(UpdateNotificationRequest request) {
+    public void updateNotification(UpdateNotificationRequest request, Long memberId) {
         Notification notification = notificationRepository.findById(request.getNotificationId())
             .orElseThrow(() -> new NotFoundExceptionMessage(NotFoundExceptionMessage.NOTIFICATION_NOT_FOUND));
 
-        notification.update(request);
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new NotFoundExceptionMessage(NotFoundExceptionMessage.USER_NOT_FOUND));
+
+        notification.update(request, member);
     }
 }

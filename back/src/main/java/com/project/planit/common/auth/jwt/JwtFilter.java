@@ -1,11 +1,13 @@
 package com.project.planit.common.auth.jwt;
 
+import com.project.planit.common.auth.userDetails.PrincipalDetails;
 import io.jsonwebtoken.ExpiredJwtException;
 import javax.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
@@ -16,6 +18,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * packageName    : com.project.planit.common.auth.jwt fileName       : JwtFilter author         :
@@ -42,15 +45,16 @@ public class JwtFilter extends GenericFilterBean {
       throws IOException, ServletException {
     log.info("jwt filter");
     HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
-    String jwt = parseBearerToken(httpServletRequest);
-    log.info("jwt:{}", jwt);
-    String requestURI = httpServletRequest.getRequestURI();
 
     try{
+      String jwt = parseBearerToken(httpServletRequest);
+      log.info("jwt:{}", jwt);
+      String requestURI = httpServletRequest.getRequestURI();
       // 유효성 검증
       if (StringUtils.hasText(jwt) && jwtProvider.validateToken(jwt)) {
         // 토큰에서 유저네임, 권한을 뽑아 스프링 시큐리티 유저를 만들어 Authentication 반환
         Authentication authentication = jwtProvider.getAuthentication(jwt);
+//        PrincipalDetails principalDetails = (PrincipalDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         // 해당 스프링 시큐리티 유저를 시큐리티 건텍스트에 저장, 즉 디비를 거치지 않음
         SecurityContextHolder.getContext().setAuthentication(authentication);
         log.debug("Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}", authentication.getName(), requestURI);
@@ -71,14 +75,13 @@ public class JwtFilter extends GenericFilterBean {
   private String parseBearerToken(HttpServletRequest request) {
     Cookie[] cookies = request.getCookies();
     Cookie newCookie = null;
-    for(Cookie x: cookies){
-      if(x.getName().equals("access")){
+    for(Cookie x: cookies) {
+      if (x.getName().equals("access")) {
         newCookie = x;
       }
     }
-    log.info(newCookie.getValue());
     String bearerToken = newCookie.getValue();
-    if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+    if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer")) {
       return bearerToken.substring(7);
     }
     return null;
