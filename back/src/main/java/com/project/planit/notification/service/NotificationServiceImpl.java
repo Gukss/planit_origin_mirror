@@ -64,6 +64,7 @@ public class NotificationServiceImpl implements NotificationService{
                             .read(NotificationItem.getReadOrNot())
                             .sendMemberName(NotificationItem.getSendMemberId().getName())
                             .createdAt(NotificationItem.getCreated_at())
+                            .roomId(room.getId())
                             .build());
                 }
             }
