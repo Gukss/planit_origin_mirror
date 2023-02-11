@@ -13,6 +13,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,6 +21,14 @@ import java.util.List;
 public class NotificationController {
     private final NotificationServiceImpl notificationService;
     private final JwtProvider jwtProvider;
+
+
+    // SSE객체 생성을 위한 컨트롤러
+    @GetMapping(value = "/subscribe", produces = "text/event-stream")
+    public SseEmitter subscribe(@RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId) {
+        Long memberId=1L;
+        return notificationService.subscribe(memberId,lastEventId);
+    }
 
     @GetMapping
     public ResponseEntity<List<FindNotificationResponse>> findNotification(@CookieValue String access) {
