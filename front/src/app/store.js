@@ -171,3 +171,9 @@ export const roomPK = atom({
   key: 'roomId',
   default: -1,
 });
+
+// 소켓 객체
+export const stompClient = atom({
+  key: 'stompClient',
+  default: {},
+});
