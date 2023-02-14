@@ -6,11 +6,7 @@ import com.project.planit.common.auth.jwt.JwtProvider;
 import com.project.planit.member.entity.Member;
 import com.project.planit.room.dto.UpdateRoomResponse;
 import com.project.planit.room.entity.Room;
-import com.project.planit.storage.dto.CreateStorageRequest;
-import com.project.planit.storage.dto.CreateStorageResponse;
-import com.project.planit.storage.dto.SocketStorageRequest;
-import com.project.planit.storage.dto.UpdateStorageRequest;
-import com.project.planit.storage.dto.UpdateStorageResponse;
+import com.project.planit.storage.dto.*;
 import com.project.planit.storage.entity.Category;
 import com.project.planit.storage.entity.Storage;
 import com.project.planit.storage.service.StorageServiceImpl;
@@ -93,4 +89,10 @@ public class StorageController {
         }
         return parseToken;
     }
+    @MessageMapping("/schedule")
+    public void schedule(SocketScheduleRequest socketScheduleRequest){
+//        System.out.println(socketStorageRequest);
+        messagingTemplate.convertAndSend("/sub/schedule/" + socketScheduleRequest.getRoomId(), socketScheduleRequest);
+    }
+
 }
