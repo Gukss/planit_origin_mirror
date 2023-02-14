@@ -28,5 +28,5 @@ public class SocketVotesList {
     private String title;
 
     @NotNull
-    private List<SocketVotesListItem> socketVotesListItemList;
+    private List<SocketVotesListItem> votesListItem;
 }
