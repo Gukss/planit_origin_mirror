@@ -30,7 +30,6 @@ public class StorageController {
     // pub, sub관리 컨트롤러 RequestMapping 무시..
     @MessageMapping("/markers")
     public void message(SocketStorageRequest socketStorageRequest){
-//        System.out.println(socketStorageRequest);
         messagingTemplate.convertAndSend("/sub/markers/" + socketStorageRequest.getRoomId(), socketStorageRequest);
     }
 
@@ -41,9 +40,6 @@ public class StorageController {
 
     @PostMapping
     public ResponseEntity<CreateStorageResponse> createStorage(@RequestBody CreateStorageRequest request, @RequestHeader("Authorization") String access) {
-        // @TODO : 토큰 아이디로 변환 => O
-//        Long reqestMemberId=1L;
-
         String parseToken = returnAccessToken(access);
         Claims claims = jwtProvider.parseClaims(parseToken);
         Long reqestMemberId = Long.parseLong(claims.get("memberId").toString());
@@ -67,9 +63,6 @@ public class StorageController {
 
     @PatchMapping
     public ResponseEntity<UpdateStorageResponse> updateStorage(@RequestBody UpdateStorageRequest request, @RequestHeader("Authorization") String access) {
-        // @TODO : 토큰 아이디로 변환 => O
-//        Long memberId=1L;
-
         String parseToken = returnAccessToken(access);
         Claims claims = jwtProvider.parseClaims(parseToken);
         Long memberId = Long.parseLong(claims.get("memberId").toString());
@@ -91,7 +84,6 @@ public class StorageController {
     }
     @MessageMapping("/schedule")
     public void schedule(SocketScheduleRequest socketScheduleRequest){
-//        System.out.println(socketStorageRequest);
         messagingTemplate.convertAndSend("/sub/schedule/" + socketScheduleRequest.getRoomId(), socketScheduleRequest);
     }
 

@@ -105,7 +105,6 @@ public class VoteController {
   // pub, sub관리 컨트롤러 RequestMapping 무시..
   @MessageMapping("/votes")
   public void message(SocketVotesRequest socketVotesRequest){
-//        System.out.println(socketStorageRequest);
     messagingTemplate.convertAndSend("/sub/votes/" + socketVotesRequest.getRoomId(), socketVotesRequest);
   }
 }
