@@ -35,6 +35,7 @@
         &:focus {
           outline-color: #2b3f6b;
         }
+        padding: 1rem;
       }
       label {
         position: relative;
@@ -44,7 +45,7 @@
           height: 2.5rem;
           font-size: 1rem;
           z-index: 1;
-          top: -190%;
+          top: -42%;
           right: 2%;
         }
       }

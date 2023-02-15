@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import axios from 'axios';
 import domtoimage from 'dom-to-image';
 import { saveAs } from 'file-saver';
 import Swal from 'sweetalert2';
+import { userInfoState, roomInfoState } from '../../app/store';
 import './Bbar.scss';
 
 function Bbar(props) {
@@ -31,11 +34,22 @@ function Bbar(props) {
   // };
 
   // 일정 이미지로 저장 코드
+  const userInfo = useRecoilValue(userInfoState);
+  const roomInfo = useRecoilValue(roomInfoState);
+
+  const instance = axios.create({
+    baseURL: 'https://i8b202.p.ssafy.io/api',
+    headers: {
+      Authorization: `Bearer ${userInfo.token}`,
+      contentType: 'application/json',
+    },
+  });
+
   const title = 'planit';
 
   const onDownloadBtn = () => {
     domtoimage
-      .toBlob(document.querySelector('.Schedule_schedulebox_section__ITIpX'))
+      .toBlob(document.querySelector('.schedulebox_section'))
       // schedulebox_section
       .then(blob => {
         Swal.fire({
@@ -68,8 +82,10 @@ function Bbar(props) {
     <div className='bbar'>
       <div className='bbar_container'>
         <div className='bbar__header'>
-          <div className='bbar__header__title'>제목</div>
-          <div className='bbar__header__date'>일정 : 2023.01.14</div>
+          <div className='bbar__header__title'>{roomInfo.roomName}</div>
+          <div className='bbar__header__date'>
+            일정 : {roomInfo.startDate} ~ {roomInfo.endDate}
+          </div>
         </div>
         <i
           className='bx bx-export'

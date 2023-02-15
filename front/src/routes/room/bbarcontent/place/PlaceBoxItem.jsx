@@ -5,6 +5,8 @@ import {
   userMarkers,
   searchedPlace,
   removeInformation,
+  isConfirmedChanged,
+  markerFlag,
 } from '../../../../app/store';
 
 function PlaceBoxItem(props) {
@@ -13,6 +15,9 @@ function PlaceBoxItem(props) {
   const [markerPosition, setMarkerPosition] = useRecoilState(searchedPlace);
   const [markers, setMarkers] = useRecoilState(userMarkers);
   const [isClick, setIsClick] = useState(props.item.isConfirmed);
+  const [publishMarkerFlag, setPublishMarkerFlag] = useRecoilState(markerFlag);
+  const [confirmedChanged, setConfirmedChanged] =
+    useRecoilState(isConfirmedChanged);
 
   // tag 클릭시 이동
   const moveMarker = e => {
@@ -30,6 +35,7 @@ function PlaceBoxItem(props) {
 
   const onConfirmPlace = e => {
     console.log('확정 버튼 누름', e);
+    setConfirmedChanged(true);
 
     setMarkers(
       markers.map(marker =>
@@ -40,13 +46,14 @@ function PlaceBoxItem(props) {
     );
 
     setIsClick(props.isConfirmed);
+    setPublishMarkerFlag([...publishMarkerFlag, 1]);
     console.log('컨펌 후 마커', markers);
   };
   return (
     <div className={classes.item_body}>
       <div
         className={classes.item_tag}
-        style={{ backgroundColor: `${props.item.userColor}` }}
+        style={{ backgroundColor: `${props.item.colorCode}` }}
         onClick={moveMarker}
         onKeyDown={moveMarker}
         role='button'

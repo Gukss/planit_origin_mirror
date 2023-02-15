@@ -19,15 +19,24 @@ function PlaceBox(props) {
   //   //   bg.classList.add(classClicked);
   //   // }
   // };
-  console.log('placebox에 옴', props);
+  // console.log('placebox에 옴', props);
 
   return (
     <div>
       <div className={classes.box_title}>{props.boxTitle}</div>
       <div className={classes.box_content}>
-        {props.items.map(item => {
+        {props.items.length ? (
+          props.items.map(item => {
+            return <PlaceBoxItem item={item} />;
+          })
+        ) : (
+          <div className={classes.box_content_empty}>
+            <p>저장한 장소가 없습니다</p>
+          </div>
+        )}
+        {/* {props.items.map(item => {
           return <PlaceBoxItem item={item} />;
-        })}
+        })} */}
       </div>
     </div>
   );

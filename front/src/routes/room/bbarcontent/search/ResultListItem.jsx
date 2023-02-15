@@ -1,15 +1,19 @@
 import React from 'react';
-import { useRecoilState, useSetRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import {
   searchedPlace,
   userMarkers,
   currentMarker,
+  markerFlag,
+  roomInfoState,
 } from '../../../../app/store';
 
 import classes from './ResultListItem.module.scss';
 
 function ResultListItem(props) {
-  const userMarkerColor = '#8059D1';
+  const roomInfo = useRecoilValue(roomInfoState);
+  const userMarkerColor = roomInfo.colorCode;
+
   const fullCategory = props.place.category_name;
   const fullCategoryList = fullCategory.split('>');
   console.log('ResultItem 생성마다 호출');
@@ -19,6 +23,7 @@ function ResultListItem(props) {
   const setAddMarker = useSetRecoilState(currentMarker);
   const setSelectMarker = useSetRecoilState(searchedPlace);
   const [markers, setMarkers] = useRecoilState(userMarkers);
+  const [publishMarkerFlag, setPublishMarkerFlag] = useRecoilState(markerFlag);
 
   // 클릭시 좌표값 저장후 이동.
   const onClickHandler = e => {
@@ -38,10 +43,9 @@ function ResultListItem(props) {
 
     const newMarker = {
       id: props.place.id,
-      category: props.place.category_group_code,
-      category_name: props.place.category_group_name,
-      userColor: userMarkerColor,
-      dayColor: '',
+      categoryCode: props.place.category_group_code,
+      categoryName: props.place.category_group_name,
+      colorCode: userMarkerColor,
       isConfirmed: false,
       title: props.place.place_name,
       x: props.place.x,
@@ -52,6 +56,7 @@ function ResultListItem(props) {
     if (check === -1) {
       setAddMarker(newMarker);
       setMarkers([...markers, newMarker]);
+      setPublishMarkerFlag([...publishMarkerFlag, 1]);
     }
   };
 
@@ -78,8 +83,7 @@ function ResultListItem(props) {
           role='button'
           tabIndex={0}
         >
-          <button>+</button>
-          {/* <i className='bx bx-plus'></i> */}
+          <i className='bx bx-plus' />
         </div>
       </div>
       <div className={classes.resultitem__content}>
@@ -95,7 +99,8 @@ function ResultListItem(props) {
         )}
         <div>
           <a href={detailUrl} target='_blank' rel='noopener noreferrer'>
-            가게 정보 확인하기
+            <i className='bx bxs-map' style={{ color: '#464545' }}></i>가게 정보
+            확인하기
           </a>
         </div>
       </div>

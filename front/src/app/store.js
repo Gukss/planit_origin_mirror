@@ -38,70 +38,49 @@ export const removeInformation = atom({
   default: {},
 });
 
-// 커스텀할 유저마커
+// 커스텀할 유저마커 ( 배열 안에 빈 객체 추가 )
 export const userMarkers = atom({
   key: 'userMarkers',
   default: [
-    {
-      id: 'dummy_1',
-      category: 'AD5',
-      userColor: '#EB5252',
-      dayColor: '',
-      isConfirmed: false,
-      title: '숙소1',
-      category_name: '숙박',
-      x: 126.44,
-      y: 32.44,
-      marker: {},
-    },
-
-    {
-      id: 'dummy_2',
-      category: 'AD5',
-      userColor: '#EB5252',
-      dayColor: '',
-      isConfirmed: false,
-      title: '숙소2',
-      x: 126.44,
-      y: 32.44,
-      marker: {},
-    },
-
-    {
-      id: 'dummy_3',
-      category: 'FD6',
-      userColor: '#90CE0A',
-      dayColor: '',
-      isConfirmed: false,
-      title: '식당1',
-      category_name: '식당',
-      x: 126.44,
-      y: 32.44,
-      marker: {},
-    },
-    {
-      id: 'dummy_4',
-      category: 'AT4',
-      userColor: '#7997FE',
-      dayColor: '',
-      isConfirmed: false,
-      title: '관광명소 성심당',
-      category_name: '식당',
-      x: 126.44,
-      y: 32.44,
-      marker: {},
-    },
-    {
-      id: 'dummy_5',
-      category: 'CE7',
-      userColor: '#FAE635',
-      dayColor: '',
-      isConfirmed: false,
-      title: '카페 아자카파',
-      x: 126.44,
-      y: 32.44,
-      isMarker: {},
-    },
+    // {
+    // id: '',
+    // categoryCode: '',
+    // colorCode: '#',
+    // isConfirmed: false,
+    // title: '',
+    // categoryName: '',
+    // x: '',
+    // y: '',
+    // },
+    // {
+    //   id: 'dummy_2',
+    //   categoryCode: 'AD5',
+    //   colorCode: '#EB5252',
+    //   isConfirmed: false,
+    //   title: '숙소2',
+    //   x: 126.44,
+    //   y: 32.44,
+    // },
+    // {
+    //   id: 'dummy_3',
+    //   categoryCode: 'FD6',
+    //   colorCode: '#90CE0A',
+    //   isConfirmed: false,
+    //   title: '식당1',
+    //   categoryName: '식당',
+    //   x: 126.44,
+    //   y: 32.44,
+    // },
+    // {
+    //   id: 'dummy_4',
+    //   categoryCode: 'AT4',
+    //   colorCode: '#7997FE',
+    //   isConfirmed: false,
+    //   title: '관광명소 성심당',
+    //   categoryName: '식당',
+    //   x: 126.44,
+    //   y: 32.44,
+    // },
   ],
 });
 
@@ -116,9 +95,21 @@ export const categoryCheck = atom({
 
 // -----------------------------------------------------------
 
+// 마커 publish 용
+export const markerFlag = atom({
+  key: 'markerFlag',
+  default: [],
+});
+
 // socket data 관리
 export const chatMessages = atom({
   key: 'chatMessages',
+  default: [],
+});
+
+// socket data Marker 관리
+export const socketMarkers = atom({
+  key: 'socketMarkers',
   default: [],
 });
 
@@ -139,18 +130,31 @@ export const roomDateInfo = atom({
 // 일정 관리
 export const scheduleInfo = atom({
   key: 'scheduleInfo',
-  default: {},
+  default: [],
 });
 
 // 일정 변동 여부 - 재방문했을 때 기존 일정 유지하기 위한 변수
-export const isScheduleChanged = atom({
-  key: 'isScheduleChanged',
+export const isConfirmedChanged = atom({
+  key: 'isConfirmedChanged',
   default: false,
 });
 
 // 투표 관리
 export const voteInformation = atom({
   key: 'voteInformation',
+  default: [],
+});
+
+// 투표 여부 확인(local 별 관리)
+export const isVoted = atom({
+  key: 'isVoted',
+  default: [],
+  // { voteTitle: info.value.title, memberVote: false }
+});
+
+// 투표 publish 용
+export const voteFlag = atom({
+  key: 'voteFlag',
   default: [],
 });
 
@@ -172,8 +176,19 @@ export const roomPK = atom({
   default: -1,
 });
 
-// 소켓 객체
+export const roomInfoState = atom({
+  key: 'roomInfo',
+  default: {
+    // roomId: -1,
+    // roomName: '',
+    // startDate: '',
+    // endDate: '',
+    // colorCode: '',
+  },
+});
+
+// 전역에 처리하는 용
 export const stompClient = atom({
   key: 'stompClient',
-  default: {},
+  default: null,
 });

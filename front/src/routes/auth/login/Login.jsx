@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
@@ -6,6 +6,7 @@ import kakaoLogin from '../../../app/assets/images/kakao_login.jpg';
 import naverLogin from '../../../app/assets/images/naver_login.png';
 import classes from './Login.module.scss';
 import { isLogin, userInfoState } from '../../../app/store';
+import planitLogo from '../../../app/assets/images/planit_logo.svg';
 
 function Login() {
   const [AppId, setAppId] = useState('');
@@ -13,6 +14,11 @@ function Login() {
   const [isLoginState, setIsLoginState] = useRecoilState(isLogin);
   const [userInfo, setUserInfo] = useRecoilState(userInfoState);
   const navigate = useNavigate();
+  const idInput = useRef(null);
+
+  useEffect(() => {
+    idInput.current.focus();
+  }, []);
 
   // 로그인 한 회원이 접속 시도 시, 메인페이지로 보내줌
   const checkLoginValue = isLoginState => {
@@ -24,7 +30,6 @@ function Login() {
   // id 확인
   const handleIdChange = e => {
     setAppId(e.target.value);
-    console.log(e.target.value);
   };
 
   // pwd 확인
@@ -57,7 +62,6 @@ function Login() {
         memberAppName: response.data.memberName,
         token: response.data.token,
       });
-      console.log(userInfo);
 
       navigate('/');
     } catch (error) {
@@ -68,12 +72,18 @@ function Login() {
   return (
     <div className={classes.login}>
       <div className={classes.login__bar}>
+        <div className={classes.login__ticket}>
+          PLAN!T T!CKET PLAN!T T!CKET PLAN!T T!CKET PLAN!T T!CKET PLAN!T T!CKET
+          PLAN!T T!CKET PLAN!T T!CKET PLAN!T T!CKET PLAN!T TICKETPLANIT TICKET
+          PLANIT TICKET PLANIT TICKET PLANIT TICKETPLANIT TICKET PLANIT TICKET
+          PLANIT TICKET{' '}
+        </div>
         <div className={classes.login__main}>
           <div className={classes.login__main__logo}>
-            <i className='bx bx-box' />
+            <img alt='logo' src={planitLogo} width='100%' height='100%' />
           </div>
           <div className={classes.login__main__signin}>
-            <h1>PLAN!T</h1>
+            {/* <h1>PLAN!T</h1> */}
             <form onSubmit={handleSubmit}>
               <div className={classes.login_box}>
                 {/* ID, PW 입력 */}
@@ -83,8 +93,9 @@ function Login() {
                     type='text'
                     placeholder='아이디를 입력해주세요.'
                     onChange={handleIdChange}
+                    ref={idInput}
                   />
-                  <p>PASSWORD</p>
+                  <p className={classes.login_inputbox_pwd}>PASSWORD</p>
                   <input
                     type='password'
                     placeholder='비밀번호를 입력해주세요.'
@@ -109,11 +120,10 @@ function Login() {
             </label>
             {/* 소셜로그인 줄 */}
             <div className={classes.member_check}>
-              <span>
+              <span className={classes.signUp}>
                 아직 회원이 아니신가요?<Link to='/signup'>회원가입 하기</Link>
               </span>
               <span>
-                간편 로그인
                 <img src={kakaoLogin} alt='' />
                 <img src={naverLogin} alt='' />
               </span>

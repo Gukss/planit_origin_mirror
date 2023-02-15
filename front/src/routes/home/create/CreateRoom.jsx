@@ -5,26 +5,22 @@ import axios from 'axios';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useNavigate } from 'react-router-dom';
 import FriendListItem from './friendbox/friendListItem';
-import { dateRangeState, roomPK, userInfoState } from '../../../app/store';
-import logoImg from '../../../app/assets/images/naver_login.png';
+import {
+  dateRangeState,
+  userInfoState,
+  roomInfoState,
+} from '../../../app/store';
+import logoImg from '../../../app/assets/images/planit_logo_reverse.png';
 import Header from '../../../common/header/Header';
 import classes from './CreateRoom.module.scss';
 
 function CreateRoom() {
-  const colorCode = [
-    '#EB5252',
-    '#7997FE',
-    '#90CE0A',
-    '#61D9C3',
-    '#8059D1',
-    '#FF7BBA',
-  ];
   const [dateRange, setDateRange] = useRecoilState(dateRangeState);
-  const [roomId, setRoomId] = useRecoilState(roomPK);
   const [startD, setStartDate] = useState(dateRange.startDate);
   const [endD, setEndDate] = useState(dateRange.endDate);
   const [roomName, setRoomName] = useState('');
   const [userInfo, setUserInfo] = useRecoilState(userInfoState);
+  const [roomInfo, setRoomInfo] = useRecoilState(roomInfoState);
   const [inviteUserPk, setInviteUserPk] = useState([]);
   const navigate = useNavigate();
 
@@ -77,10 +73,19 @@ function CreateRoom() {
       colorCode: '#EB5252',
     };
     const resMemberRoom = await instance.post('/rooms/users', reqMemRoomData);
-    console.log(resMemberRoom);
-    console.log(responseCreateRoom.data);
-    setRoomId(responseCreateRoom.data.roomId);
-    navigate('/room/search');
+    setRoomInfo({
+      roomId: responseCreateRoom.data.roomId,
+      startDate: dateToString(startD),
+      endDate: dateToString(endD),
+      roomName: `${roomName}`,
+      colorCode: '#EB5252',
+    });
+    if (!roomInfo.roomId) {
+      console.log(roomInfo);
+      setTimeout(() => navigate('/room/search'), 600);
+    } else {
+      navigate('/room/search');
+    }
   };
 
   // startDate, endDate 변경
@@ -122,7 +127,11 @@ function CreateRoom() {
     console.log(userInfo);
     setInputValue('');
     console.log(friend);
-    setSelectFriends([...selectFriends, friend]);
+    if (selectFriends.length < 5) {
+      setSelectFriends([...selectFriends, friend]);
+    } else {
+      alert('5명까지 초대가능합니다.');
+    }
     setShowDropdown(false);
     // console.log(2);
   };
@@ -148,11 +157,10 @@ function CreateRoom() {
         <div className={classes.create}>
           <div className={classes.create__title}>
             <div className={classes.create_title_text}>
-              <div>PLAN</div>
-              <div>!T</div>
-            </div>
-            <div className={classes.create_title_img}>
-              <img src={logoImg} alt='' />
+              <div className={classes.create_title_img}>
+                <img src={logoImg} alt='' />
+              </div>
+              PLAN!T
             </div>
           </div>
         </div>
@@ -212,14 +220,14 @@ function CreateRoom() {
                         <div className={classes.card_back}>
                           <div className={classes.center_wrap}>
                             <div className={classes.center_section}>
-                              <div>
+                              <div className={classes.friend_list}>
                                 {selectFriends.map((friend, i) => (
-                                  <div>
+                                  <div className={classes.friend_item}>
                                     <FriendListItem user={friend.memberName} />
                                     <button
                                       onClick={() => handleRemoveClick(friend)}
                                     >
-                                      X
+                                      x
                                     </button>
                                   </div>
                                 ))}
