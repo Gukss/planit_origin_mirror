@@ -123,10 +123,6 @@ function Login() {
               <span className={classes.signUp}>
                 아직 회원이 아니신가요?<Link to='/signup'>회원가입 하기</Link>
               </span>
-              <span>
-                <img src={kakaoLogin} alt='' />
-                <img src={naverLogin} alt='' />
-              </span>
             </div>
           </div>
         </div>
