@@ -34,8 +34,12 @@ public class StorageController {
     }
 
     @GetMapping(path="/rooms/{roomId}")
-    public ResponseEntity<?> findStorageList(@PathVariable Long roomId){
-     return ResponseEntity.ok(storageService.findStorageList(roomId));
+    public ResponseEntity<?> findStorageList(@PathVariable Long roomId, @RequestHeader("Authorization") String access) {
+        String parseToken = returnAccessToken(access);
+        Claims claims = jwtProvider.parseClaims(parseToken);
+        Long reqestMemberId = Long.parseLong(claims.get("memberId").toString());
+
+        return ResponseEntity.ok(storageService.findStorageList(roomId, reqestMemberId));
     }
 
     @PostMapping
@@ -75,16 +79,12 @@ public class StorageController {
         return res;
     }
 
-    private String returnAccessToken(String fullToken){
+    private String returnAccessToken(String fullToken) {
         String parseToken = "";
         if (StringUtils.hasText(fullToken) && fullToken.startsWith("Bearer")) {
             parseToken = fullToken.substring(7);
         }
         return parseToken;
-    }
-    @MessageMapping("/schedule")
-    public void schedule(SocketScheduleRequest socketScheduleRequest){
-        messagingTemplate.convertAndSend("/sub/schedule/" + socketScheduleRequest.getRoomId(), socketScheduleRequest);
     }
 
 }
